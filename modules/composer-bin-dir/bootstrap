@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+#
+# Find script path
+#
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+    DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+#
+# composer-bin-dir functions
+#
+function install {
+    cd ~/bin
+    ln -s $DIR/composer.json ~/bin/composer.json
+    composer install
+}
+
+function update {
+    cd ~/bin
+    composer update
+}
+
+# Check for composer-bin-dir
+if [ ! -f ~/bin/composer.json ];
+then
+    install
+else
+    update
+fi
+
+exit 0

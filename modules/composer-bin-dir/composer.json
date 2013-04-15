@@ -1,0 +1,16 @@
+{
+    "require" : {
+
+        "fruux/ec2dns": "dev-master",
+        "phpunit/phpunit": "3.7.*",
+        "squizlabs/php_codesniffer": "dev-master",
+        "phpmd/phpmd": "dev-master",
+        "fabpot/php-cs-fixer": "dev-master",
+        "composer/satis": "dev-master",
+        "phing/phing": "dev-master"
+    },
+    "config" : {
+        "bin-dir" : "."
+    },
+    "minimum-stability": "dev"
+}
