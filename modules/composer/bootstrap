@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+#
+# Find script path
+#
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+    DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+#
+# Includes
+#
+source $DIR/../../functions/cmd-available
+
+#
+# Composer functions
+#
+function install {
+    cd /tmp
+    curl -sS https://getcomposer.org/installer | php
+    mv /tmp/composer.phar /usr/local/bin/composer
+}
+
+function update {
+    composer self-update
+}
+
+# Check for Composer
+if ! cmd-available composer
+then
+    install
+else
+    update
+fi
+
+exit 0
