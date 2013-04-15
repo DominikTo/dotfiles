@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+#
+# Find script path
+#
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+    DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+#
+# Includes
+#
+source $DIR/../../functions/cmd-available
+
+#
+# Read package file
+#
+PACKAGES=(`cat "$DIR/packages.cnf"`)
+
+#
+# Homebrew functions
+#
+function install {
+    ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+}
+
+function update {
+    brew update
+}
+
+function package-installed () {
+    if test "$(brew list | grep $1)"
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function package-install () {
+    brew install $1
+}
+
+function package-outdated () {
+    if test "$(brew outdated | grep $1)"
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function package-upgrade {
+    if package-outdated $1
+    then
+    brew upgrade $1
+    fi
+}
+
+# Check for Homebrew
+if ! cmd-available brew
+then
+    install
+else
+    update
+fi
+
+#
+# Install/upgrade packages
+#
+for PACKAGE in "${PACKAGES[@]}"
+do
+    if ! package-installed $PACKAGE
+    then
+        package-install $PACKAGE
+    else
+        package-upgrade $PACKAGE
+    fi
+done
+
+exit 0

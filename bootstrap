@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+#
+# Find script path
+#
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+    DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+#
+# Read modules file
+#
+MODULES=(`cat "$DIR/modules.cnf"`)
+
+#
+# Self update
+#
+cd $DIR
+git pull
+
+#
+# Run modules
+#
+for MODULE in "${MODULES[@]}";
+do
+    echo "# Started $MODULE module."
+    $DIR/modules/$MODULE/bootstrap
+    echo "# Completed $MODULE module."
+done
+
+exit 0
